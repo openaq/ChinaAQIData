@@ -1,12 +1,12 @@
 #!/usr/bin/env python2
 #  Copyright (c) 2011, Timo Schmid <tschmid@ernw.de>
 #  All rights reserved.
-#  
+#
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
 #  are met:
 #
-#  * Redistributions of source code must retain the above copyright 
+#  * Redistributions of source code must retain the above copyright
 #    notice, this list of conditions and the following disclaimer.
 #  * Redistributions in binary form must reproduce the above copyright
 #    notice, this list of conditions and the following disclaimer in the
@@ -31,14 +31,21 @@ if __name__ == '__main__':
     import sys
     from wcf.records import Record, print_records
 
+    # Trying to nicely handle the case where sys.stdin isn't available
     if sys.version_info >= (3, 0, ):
-        fp = sys.stdin.buffer
+        try:
+            fp = sys.stdin.buffer
+        except:
+            pass
     else:
-        fp = sys.stdin
+        try:
+            fp = sys.stdin
+        except:
+            pass
     if len(sys.argv) > 1:
         filename = sys.argv[1]
         fp = open(filename, 'rb')
-    
+
     with fp:
         records = Record.parse(fp)
         print_records(records)

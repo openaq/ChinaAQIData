@@ -3,6 +3,8 @@ import json
 import geojson
 import time
 import xml.dom.minidom
+import sys
+import os
 
 
 def data_from_xml_json(xmlfile):
@@ -41,7 +43,11 @@ def xmlparse(xmlstr):
     # return json.dumps(airdata, ensure_ascii=False)
 
 if __name__ == "__main__":
-    data = data_from_xml_json("data.xml")
+    # Handle case of user supplied directory
+    user_dir = ""
+    if len(sys.argv) > 1:
+            user_dir = sys.argv[1]
+    data = data_from_xml_json(user_dir + "data.xml")
     featList = []
     for recd in data:
         try:
@@ -58,9 +64,14 @@ if __name__ == "__main__":
     fc = geojson.FeatureCollection(featList)
     fname = time.strftime("%Y-%m-%d-%H", time.localtime())
     fstr = geojson.dumps(fc, sort_keys=True)
-    fp = open("archives/%s.json" % fname, "w")
+    # Make sure directory exists before trying to write to it
+    try:
+        os.makedirs(user_dir + "archives")
+    except:
+        pass
+    fp = open(user_dir + "archives/%s.json" % fname, "w")
     fp.write(fstr)
     fp.close()
-    fp = open("airnow.json", "w")
+    fp = open(user_dir + "airnow.json", "w")
     fp.write(fstr)
     fp.close()
